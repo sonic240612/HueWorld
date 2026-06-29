@@ -1,4 +1,5 @@
 import os
+import struct
 import uuid
 from datetime import datetime, timedelta
 from typing import Optional
@@ -86,11 +87,40 @@ def insert_pixel(
         return pixel
 
 
+def _ewkb_to_lnglat(hex_str: str) -> Optional[tuple[float, float]]:
+    try:
+        data = bytes.fromhex(hex_str)
+    except (ValueError, AttributeError):
+        return None
+    if len(data) < 25:
+        return None
+    byte_order = data[0]
+    is_little = byte_order == 1
+    fmt = '<' if is_little else '>'
+    geom_type = struct.unpack(fmt + 'I', data[1:5])[0]
+    has_srid = bool(geom_type & 0x20000000)
+    offset = 5
+    if has_srid:
+        offset = 9
+    if len(data) < offset + 16:
+        return None
+    x, y = struct.unpack(fmt + '2d', data[offset:offset + 16])
+    return (x, y)
+
+
 def _parse_location(row: dict) -> Optional[dict]:
     point_str = row.get("location", "")
-    coords = point_str.replace("POINT(", "").replace(")", "").split()
-    if len(coords) == 2:
-        lng, lat = float(coords[0]), float(coords[1])
+
+    coords = None
+    if point_str.startswith("POINT"):
+        parts = point_str.replace("POINT(", "").replace(")", "").split()
+        if len(parts) == 2:
+            coords = (float(parts[0]), float(parts[1]))
+    else:
+        coords = _ewkb_to_lnglat(point_str)
+
+    if coords is not None:
+        lng, lat = coords
         return {
             "id": row["id"],
             "lat": lat,
