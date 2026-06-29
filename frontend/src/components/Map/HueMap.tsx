@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { GeoPosition, Pixel } from '../../types';
+import type { Feature, FeatureCollection, LineString } from 'geojson';
 import { DEFAULT_ZOOM, AGGREGATION_ZOOM_THRESHOLD } from '../../constants';
 import { snapToGrid, cellsToPoints } from '../../utils/aggregation';
 
 const PIXEL_ICON = 'led-pixel';
+const SNAP_RES = 1 / 9;
 
 interface HueMapProps {
   center: GeoPosition | null;
@@ -14,6 +16,38 @@ interface HueMapProps {
   devMode?: boolean;
   onMapMove?: (bounds: { sw_lat: number; sw_lng: number; ne_lat: number; ne_lng: number }) => void;
   onDevPlacePixel?: (lat: number, lng: number) => void;
+}
+
+function generateGridLines(bounds: maplibregl.LngLatBounds): FeatureCollection {
+  const sw = bounds.getSouthWest();
+  const ne = bounds.getNorthEast();
+  const startLng = Math.floor(sw.lng / SNAP_RES) * SNAP_RES;
+  const endLng = Math.ceil(ne.lng / SNAP_RES) * SNAP_RES;
+  const startLat = Math.floor(sw.lat / SNAP_RES) * SNAP_RES;
+  const endLat = Math.ceil(ne.lat / SNAP_RES) * SNAP_RES;
+
+  const lines: Feature<LineString>[] = [];
+  for (let lng = startLng; lng <= endLng; lng += SNAP_RES) {
+    lines.push({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: [[lng, sw.lat], [lng, ne.lat]] },
+      properties: {},
+    });
+  }
+  for (let lat = startLat; lat <= endLat; lat += SNAP_RES) {
+    lines.push({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: [[sw.lng, lat], [ne.lng, lat]] },
+      properties: {},
+    });
+  }
+  return { type: 'FeatureCollection', features: lines };
+}
+
+function updateGrid(map: maplibregl.Map) {
+  const source = map.getSource('grid') as maplibregl.GeoJSONSource;
+  if (!source) return;
+  source.setData(generateGridLines(map.getBounds()));
 }
 
 function updateMapData(map: maplibregl.Map, zoom: number, pixels: Pixel[], myPixelIds: Set<string>) {
@@ -71,6 +105,22 @@ export default function HueMap({ center, pixels, myPixelIds, devMode, onMapMove,
 
     map.on('load', () => {
       createPixelIcon(map);
+
+      map.addSource('grid', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+
+      map.addLayer({
+        id: 'led-grid-lines',
+        type: 'line',
+        source: 'grid',
+        maxzoom: AGGREGATION_ZOOM_THRESHOLD,
+        paint: {
+          'line-color': 'rgba(255,255,255,0.04)',
+          'line-width': 1,
+        },
+      });
 
       map.addSource('pixels', {
         type: 'geojson',
@@ -141,6 +191,7 @@ export default function HueMap({ center, pixels, myPixelIds, devMode, onMapMove,
       const z = map.getZoom();
       setCurrentZoom(z);
       updateMapData(map, z, pixelsRef.current, mineRef.current);
+      updateGrid(map);
     });
 
     map.on('click', (e) => {
@@ -152,9 +203,11 @@ export default function HueMap({ center, pixels, myPixelIds, devMode, onMapMove,
       const z = map.getZoom();
       setCurrentZoom(z);
       updateMapData(map, z, pixelsRef.current, mineRef.current);
+      updateGrid(map);
     });
 
     map.on('moveend', () => {
+      updateGrid(map);
       const cb = cbRef.current;
       if (!cb) return;
       const b = map.getBounds();
