@@ -7,7 +7,17 @@ import { DEFAULT_ZOOM, AGGREGATION_ZOOM_THRESHOLD } from '../../constants';
 import { snapToGrid, cellsToPoints } from '../../utils/aggregation';
 
 const PIXEL_ICON = 'led-pixel';
-const SNAP_RES = 1 / 9;
+
+function getGridSpacing(zoom: number): number {
+  const targetPx = 8;
+  const degPerPx = 360 / (256 * Math.pow(2, zoom));
+  const spacingDeg = targetPx * degPerPx;
+  const nice = [1/9, 1/4, 1/3, 1/2, 1, 2, 3, 4, 5, 10, 15, 20, 30, 45, 60, 90, 180];
+  for (const s of nice) {
+    if (s >= spacingDeg) return s;
+  }
+  return 180;
+}
 
 interface HueMapProps {
   center: GeoPosition | null;
@@ -18,22 +28,23 @@ interface HueMapProps {
   onDevPlacePixel?: (lat: number, lng: number) => void;
 }
 
-function generateGridLines(bounds: maplibregl.LngLatBounds): FeatureCollection {
+function generateGridLines(bounds: maplibregl.LngLatBounds, zoom: number): FeatureCollection {
+  const spacing = getGridSpacing(zoom);
   const sw = bounds.getSouthWest();
   const ne = bounds.getNorthEast();
-  const startLng = Math.floor(sw.lng / SNAP_RES) * SNAP_RES;
-  const endLng = Math.ceil(ne.lng / SNAP_RES) * SNAP_RES;
-  const startLat = Math.floor(sw.lat / SNAP_RES) * SNAP_RES;
-  const endLat = Math.ceil(ne.lat / SNAP_RES) * SNAP_RES;
+  const startLng = Math.floor(sw.lng / spacing) * spacing;
+  const endLng = Math.ceil(ne.lng / spacing) * spacing;
+  const startLat = Math.floor(sw.lat / spacing) * spacing;
+  const endLat = Math.ceil(ne.lat / spacing) * spacing;
   const lines: Feature<LineString>[] = [];
-  for (let lng = startLng; lng <= endLng; lng += SNAP_RES) {
+  for (let lng = startLng; lng <= endLng; lng += spacing) {
     lines.push({
       type: 'Feature',
       geometry: { type: 'LineString', coordinates: [[lng, sw.lat], [lng, ne.lat]] },
       properties: {},
     });
   }
-  for (let lat = startLat; lat <= endLat; lat += SNAP_RES) {
+  for (let lat = startLat; lat <= endLat; lat += spacing) {
     lines.push({
       type: 'Feature',
       geometry: { type: 'LineString', coordinates: [[sw.lng, lat], [ne.lng, lat]] },
@@ -46,7 +57,7 @@ function generateGridLines(bounds: maplibregl.LngLatBounds): FeatureCollection {
 function updateGrid(map: maplibregl.Map) {
   const source = map.getSource('grid') as maplibregl.GeoJSONSource;
   if (!source) return;
-  source.setData(generateGridLines(map.getBounds()));
+  source.setData(generateGridLines(map.getBounds(), map.getZoom()));
 }
 
 function updateMapData(map: maplibregl.Map, zoom: number, pixels: Pixel[], myPixelIds: Set<string>) {
