@@ -7,6 +7,8 @@ import GlobalMood from './components/Dashboard/GlobalMood';
 import CountryRanking from './components/Dashboard/CountryRanking';
 import RegionalMood from './components/Dashboard/RegionalMood';
 import LanguageSelector from './components/LanguageSelector/LanguageSelector';
+import LanguagePicker from './components/LanguagePicker/LanguagePicker';
+import { hasSavedLanguage } from './i18n';
 import { ToastProvider, useToast } from './components/common/Toast';
 import { useGeolocation } from './hooks/useGeolocation';
 import { usePixels } from './hooks/usePixels';
@@ -25,6 +27,7 @@ function getSessionId(): string {
 function AppContent() {
   const { t } = useTranslation();
   const toast = useToast();
+  const [languagePicked, setLanguagePicked] = useState(hasSavedLanguage());
   const [onboardingDone, setOnboardingDone] = useState(false);
   const [coolDown, setCoolDown] = useState(0);
   const [viewportBounds, setViewportBounds] = useState<ViewportBounds | null>(null);
@@ -117,7 +120,11 @@ function AppContent() {
 
   return (
     <div style={styles.app}>
-      {!onboardingDone && (
+      {!languagePicked && (
+        <LanguagePicker onDone={() => setLanguagePicked(true)} />
+      )}
+
+      {languagePicked && !onboardingDone && (
         <OnboardingOverlay onComplete={() => setOnboardingDone(true)} />
       )}
 

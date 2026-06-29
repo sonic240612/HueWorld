@@ -4,7 +4,8 @@ import ko from './locales/ko.json';
 import en from './locales/en.json';
 import ja from './locales/ja.json';
 
-const savedLang = localStorage.getItem('hueworld_lang') || 'ko';
+const STORAGE_KEY = 'hueworld_lang';
+const savedLang = localStorage.getItem(STORAGE_KEY) || 'ko';
 
 i18n.use(initReactI18next).init({
   resources: { ko: { translation: ko }, en: { translation: en }, ja: { translation: ja } },
@@ -13,8 +14,12 @@ i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false },
 });
 
+export function hasSavedLanguage(): boolean {
+  return localStorage.getItem(STORAGE_KEY) !== null;
+}
+
 export function setLanguage(lang: string) {
-  localStorage.setItem('hueworld_lang', lang);
+  localStorage.setItem(STORAGE_KEY, lang);
   i18n.changeLanguage(lang);
 }
 
