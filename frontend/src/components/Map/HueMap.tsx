@@ -115,7 +115,6 @@ export default function HueMap({ center, pixels, myPixelIds, devMode, onMapMove,
         id: 'led-grid-lines',
         type: 'line',
         source: 'grid',
-        maxzoom: AGGREGATION_ZOOM_THRESHOLD,
         paint: {
           'line-color': 'rgba(255,255,255,0.04)',
           'line-width': 1,
