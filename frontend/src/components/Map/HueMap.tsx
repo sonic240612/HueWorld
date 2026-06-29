@@ -2,10 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { GeoPosition, Pixel } from '../../types';
-import type { Feature, FeatureCollection, Polygon } from 'geojson';
+import type { Feature, FeatureCollection, LineString } from 'geojson';
 import { DEFAULT_ZOOM, AGGREGATION_ZOOM_THRESHOLD } from '../../constants';
 import { snapToGrid, cellsToPoints } from '../../utils/aggregation';
-import type { GridCell } from '../../utils/aggregation';
 
 const PIXEL_ICON = 'led-pixel';
 const SNAP_RES = 1 / 9;
@@ -19,34 +18,35 @@ interface HueMapProps {
   onDevPlacePixel?: (lat: number, lng: number) => void;
 }
 
-function cellsToBorders(cells: GridCell[]): FeatureCollection {
-  const half = SNAP_RES / 2;
-  const features: Feature<Polygon>[] = cells.map(cell => {
-    const lng = cell.lng;
-    const lat = cell.lat;
-    return {
+function generateGridLines(bounds: maplibregl.LngLatBounds): FeatureCollection {
+  const sw = bounds.getSouthWest();
+  const ne = bounds.getNorthEast();
+  const startLng = Math.floor(sw.lng / SNAP_RES) * SNAP_RES;
+  const endLng = Math.ceil(ne.lng / SNAP_RES) * SNAP_RES;
+  const startLat = Math.floor(sw.lat / SNAP_RES) * SNAP_RES;
+  const endLat = Math.ceil(ne.lat / SNAP_RES) * SNAP_RES;
+  const lines: Feature<LineString>[] = [];
+  for (let lng = startLng; lng <= endLng; lng += SNAP_RES) {
+    lines.push({
       type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [[
-          [lng - half, lat - half],
-          [lng + half, lat - half],
-          [lng + half, lat + half],
-          [lng - half, lat + half],
-          [lng - half, lat - half],
-        ]],
-      },
+      geometry: { type: 'LineString', coordinates: [[lng, sw.lat], [lng, ne.lat]] },
       properties: {},
-    };
-  });
-  return { type: 'FeatureCollection', features };
+    });
+  }
+  for (let lat = startLat; lat <= endLat; lat += SNAP_RES) {
+    lines.push({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: [[sw.lng, lat], [ne.lng, lat]] },
+      properties: {},
+    });
+  }
+  return { type: 'FeatureCollection', features: lines };
 }
 
-function updateGrid(map: maplibregl.Map, zoom: number, pixels: Pixel[], _myPixelIds: Set<string>) {
+function updateGrid(map: maplibregl.Map) {
   const source = map.getSource('grid') as maplibregl.GeoJSONSource;
   if (!source) return;
-  const cells = snapToGrid(pixels, zoom);
-  source.setData(cellsToBorders(cells));
+  source.setData(generateGridLines(map.getBounds()));
 }
 
 function updateMapData(map: maplibregl.Map, zoom: number, pixels: Pixel[], myPixelIds: Set<string>) {
@@ -189,7 +189,7 @@ export default function HueMap({ center, pixels, myPixelIds, devMode, onMapMove,
       const z = map.getZoom();
       setCurrentZoom(z);
       updateMapData(map, z, pixelsRef.current, mineRef.current);
-      updateGrid(map, z, pixelsRef.current, mineRef.current);
+      updateGrid(map);
     });
 
     map.on('click', (e) => {
@@ -201,12 +201,11 @@ export default function HueMap({ center, pixels, myPixelIds, devMode, onMapMove,
       const z = map.getZoom();
       setCurrentZoom(z);
       updateMapData(map, z, pixelsRef.current, mineRef.current);
-      updateGrid(map, z, pixelsRef.current, mineRef.current);
+      updateGrid(map);
     });
 
     map.on('moveend', () => {
-      const z = map.getZoom();
-      updateGrid(map, z, pixelsRef.current, mineRef.current);
+      updateGrid(map);
       const cb = cbRef.current;
       if (!cb) return;
       const b = map.getBounds();
