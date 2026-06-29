@@ -1,28 +1,30 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface OnboardingOverlayProps {
   onComplete: () => void;
 }
 
 export default function OnboardingOverlay({ onComplete }: OnboardingOverlayProps) {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(true);
   const [step, setStep] = useState(0);
 
   const steps = [
     {
-      title: 'HueWorld',
-      subtitle: '지금, 당신이 있는 그곳의 색깔은 무엇인가요?',
-      description: '전 세계 사람들의 감정이 LED로 빛나는 실시간 글로벌 감정 지도',
+      title: t('onboarding.step1.title'),
+      subtitle: t('onboarding.step1.subtitle'),
+      description: t('onboarding.step1.description'),
     },
     {
-      title: '위치를 알려주세요',
-      subtitle: '당신의 위치를 기반으로 지도에 감정을 기록합니다',
-      description: '정확한 위치는 저장되지 않으며, 약간의 오차를 더해 익명성을 보호합니다',
+      title: t('onboarding.step2.title'),
+      subtitle: t('onboarding.step2.subtitle'),
+      description: t('onboarding.step2.description'),
     },
     {
-      title: '기분을 선택하세요',
-      subtitle: '슬라이더로 지금 기분을 색깔로 표현해보세요',
-      description: '초록(좋음) → 노랑(보통) → 빨강(안좋음)',
+      title: t('onboarding.step3.title'),
+      subtitle: t('onboarding.step3.subtitle'),
+      description: t('onboarding.step3.description'),
     },
   ];
 
@@ -57,7 +59,7 @@ export default function OnboardingOverlay({ onComplete }: OnboardingOverlayProps
         <div style={styles.subtitle}>{current.subtitle}</div>
         <div style={styles.description}>{current.description}</div>
         <button type="button" onClick={handleNext} style={styles.button}>
-          {step < steps.length - 1 ? '다음' : '시작하기'}
+          {step < steps.length - 1 ? t('onboarding.next') : t('onboarding.start')}
         </button>
       </div>
     </div>

@@ -1,0 +1,62 @@
+{
+  "app": {
+    "title": "HueWorld - Global Emotion Map"
+  },
+  "header": {
+    "dev": "DEV"
+  },
+  "toast": {
+    "success": "Mood recorded!",
+    "backendError": "Backend not running → cd backend && source venv/bin/activate && uvicorn app.main:app --port 8000",
+    "rateLimit": "Please wait 5s before submitting again",
+    "saveError": "Save failed ({{message}})"
+  },
+  "onboarding": {
+    "step1": {
+      "title": "HueWorld",
+      "subtitle": "What color is the place you are in right now?",
+      "description": "A real-time global emotion map where people's feelings light up as LEDs"
+    },
+    "step2": {
+      "title": "Share your location",
+      "subtitle": "Record your mood on the map based on your location",
+      "description": "Your exact location is not saved; a small offset is added to protect anonymity"
+    },
+    "step3": {
+      "title": "Choose your mood",
+      "subtitle": "Use the slider to express your current mood as a color",
+      "description": "Green (Good) → Yellow (Okay) → Red (Bad)"
+    },
+    "next": "Next",
+    "start": "Start"
+  },
+  "slider": {
+    "heading": "How are you feeling today?",
+    "good": "Good",
+    "bad": "Bad",
+    "record": "Record now",
+    "cooldown": "{{seconds}}s"
+  },
+  "map": {
+    "zoom": "Zoom {{zoom}}",
+    "grid": "grid",
+    "points": "points"
+  },
+  "dashboard": {
+    "globalMood": "Global Mood",
+    "globalTooltip": "Global: {{global}} | Viewport: {{viewport}}",
+    "distribution": "Distribution",
+    "noData": "No data in this area",
+    "countryRanking": "Country Ranking",
+    "noRankingData": "No data yet"
+  },
+  "mood": {
+    "Good": "Good",
+    "Okay": "Okay",
+    "Bad": "Bad"
+  },
+  "geolocation": {
+    "notSupported": "Geolocation not supported",
+    "denied": "Location permission denied. Starting from default location."
+  }
+}

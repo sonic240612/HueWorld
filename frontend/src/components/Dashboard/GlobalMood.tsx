@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import { hexToRgb, rgbToHex } from '../../utils/color';
 import type { ViewportBounds, Pixel } from '../../types';
@@ -19,6 +20,7 @@ function blendColors(c1: string, c2: string, t: number): string {
 }
 
 export default function GlobalMood({ viewportPixels, viewportBounds }: GlobalMoodProps) {
+  const { t } = useTranslation();
   const [globalAvg, setGlobalAvg] = useState('#888888');
   const [viewportDominant, setViewportDominant] = useState('#888888');
 
@@ -56,7 +58,7 @@ export default function GlobalMood({ viewportPixels, viewportBounds }: GlobalMoo
   return (
     <div style={styles.container}>
       <div
-        title={`Global: ${globalAvg} | Viewport: ${viewportDominant}`}
+        title={t('dashboard.globalTooltip', { global: globalAvg, viewport: viewportDominant })}
         style={{
           ...styles.led,
           background: `radial-gradient(
@@ -82,7 +84,7 @@ export default function GlobalMood({ viewportPixels, viewportBounds }: GlobalMoo
           }}
         />
       </div>
-      <div style={styles.label}>Global Mood</div>
+      <div style={styles.label}>{t('dashboard.globalMood')}</div>
     </div>
   );
 }

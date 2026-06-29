@@ -1,0 +1,62 @@
+{
+  "app": {
+    "title": "HueWorld - 글로벌 감정 지도"
+  },
+  "header": {
+    "dev": "DEV"
+  },
+  "toast": {
+    "success": "Mood recorded!",
+    "backendError": "Backend not running → cd backend && source venv/bin/activate && uvicorn app.main:app --port 8000",
+    "rateLimit": "Please wait 5s before submitting again",
+    "saveError": "Save failed ({{message}})"
+  },
+  "onboarding": {
+    "step1": {
+      "title": "HueWorld",
+      "subtitle": "지금, 당신이 있는 그곳의 색깔은 무엇인가요?",
+      "description": "전 세계 사람들의 감정이 LED로 빛나는 실시간 글로벌 감정 지도"
+    },
+    "step2": {
+      "title": "위치를 알려주세요",
+      "subtitle": "당신의 위치를 기반으로 지도에 감정을 기록합니다",
+      "description": "정확한 위치는 저장되지 않으며, 약간의 오차를 더해 익명성을 보호합니다"
+    },
+    "step3": {
+      "title": "기분을 선택하세요",
+      "subtitle": "슬라이더로 지금 기분을 색깔로 표현해보세요",
+      "description": "초록(좋음) → 노랑(보통) → 빨강(안좋음)"
+    },
+    "next": "다음",
+    "start": "시작하기"
+  },
+  "slider": {
+    "heading": "오늘의 기분은 어떤가요?",
+    "good": "좋음",
+    "bad": "안좋음",
+    "record": "지금 기록하기",
+    "cooldown": "{{seconds}}초 후 가능"
+  },
+  "map": {
+    "zoom": "Zoom {{zoom}}",
+    "grid": "grid",
+    "points": "points"
+  },
+  "dashboard": {
+    "globalMood": "Global Mood",
+    "globalTooltip": "Global: {{global}} | Viewport: {{viewport}}",
+    "distribution": "Distribution",
+    "noData": "No data in this area",
+    "countryRanking": "Country Ranking",
+    "noRankingData": "No data yet"
+  },
+  "mood": {
+    "Good": "좋음",
+    "Okay": "보통",
+    "Bad": "안좋음"
+  },
+  "geolocation": {
+    "notSupported": "Geolocation not supported",
+    "denied": "위치 권한이 거부되었습니다. 기본 위치(서울)에서 시작합니다."
+  }
+}

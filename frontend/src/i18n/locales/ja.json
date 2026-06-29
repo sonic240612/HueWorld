@@ -1,0 +1,62 @@
+{
+  "app": {
+    "title": "HueWorld - グローバル感情マップ"
+  },
+  "header": {
+    "dev": "DEV"
+  },
+  "toast": {
+    "success": "気分を記録しました！",
+    "backendError": "Backend not running → cd backend && source venv/bin/activate && uvicorn app.main:app --port 8000",
+    "rateLimit": "再送信まで5秒お待ちください",
+    "saveError": "保存に失敗しました（{{message}}）"
+  },
+  "onboarding": {
+    "step1": {
+      "title": "HueWorld",
+      "subtitle": "今、あなたがいる場所の色は何ですか？",
+      "description": "世界中の人々の感情がLEDで光るリアルタイムグローバル感情マップ"
+    },
+    "step2": {
+      "title": "位置情報を共有してください",
+      "subtitle": "あなたの位置に基づいて地図に気分を記録します",
+      "description": "正確な位置は保存されず、匿名性を保護するために誤差が加えられます"
+    },
+    "step3": {
+      "title": "気分を選んでください",
+      "subtitle": "スライダーで今の気分を色で表現してください",
+      "description": "緑（良い）→ 黄（普通）→ 赤（悪い）"
+    },
+    "next": "次へ",
+    "start": "開始"
+  },
+  "slider": {
+    "heading": "今日の気分はいかがですか？",
+    "good": "良い",
+    "bad": "悪い",
+    "record": "今すぐ記録",
+    "cooldown": "あと{{seconds}}秒"
+  },
+  "map": {
+    "zoom": "拡大率 {{zoom}}",
+    "grid": "グリッド",
+    "points": "ポイント"
+  },
+  "dashboard": {
+    "globalMood": "グローバルムード",
+    "globalTooltip": "Global: {{global}} | Viewport: {{viewport}}",
+    "distribution": "分布",
+    "noData": "このエリアにデータはありません",
+    "countryRanking": "国別ランキング",
+    "noRankingData": "まだデータがありません"
+  },
+  "mood": {
+    "Good": "良い",
+    "Okay": "普通",
+    "Bad": "悪い"
+  },
+  "geolocation": {
+    "notSupported": "位置情報がサポートされていません",
+    "denied": "位置情報の許可が拒否されました。デフォルトの位置から開始します。"
+  }
+}

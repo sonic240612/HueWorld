@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMoodSlider } from '../../hooks/useMoodSlider';
 interface MoodSliderProps {
   onMoodSubmit: (color: string) => void;
@@ -7,6 +8,7 @@ interface MoodSliderProps {
 }
 
 export default function MoodSlider({ onMoodSubmit, coolDown, onColorChange }: MoodSliderProps) {
+  const { t } = useTranslation();
   const { value, color, handleChange } = useMoodSlider(0.5);
   const [submitted, setSubmitted] = useState(false);
 
@@ -24,9 +26,9 @@ export default function MoodSlider({ onMoodSubmit, coolDown, onColorChange }: Mo
 
   return (
     <div style={styles.container}>
-      <div style={styles.label}>오늘의 기분은 어떤가요?</div>
+      <div style={styles.label}>{t('slider.heading')}</div>
       <div style={styles.sliderRow}>
-        <span style={{ color: '#00FF00', ...styles.moodLabel }}>좋음</span>
+        <span style={{ color: '#00FF00', ...styles.moodLabel }}>{t('slider.good')}</span>
         <input
           type="range"
           min="0"
@@ -40,7 +42,7 @@ export default function MoodSlider({ onMoodSubmit, coolDown, onColorChange }: Mo
             background: `linear-gradient(to right, #00FF00, #FFFF00, #FF0000)`,
           }}
         />
-        <span style={{ color: '#FF0000', ...styles.moodLabel }}>안좋음</span>
+        <span style={{ color: '#FF0000', ...styles.moodLabel }}>{t('slider.bad')}</span>
       </div>
       <div style={styles.previewRow}>
         <div
@@ -66,13 +68,13 @@ export default function MoodSlider({ onMoodSubmit, coolDown, onColorChange }: Mo
           }}
         >
           {canSubmit ? (
-            <span style={{ textShadow: '0 0 4px #000, 0 0 8px #000' }}>지금 기록하기</span>
+            <span style={{ textShadow: '0 0 4px #000, 0 0 8px #000' }}>{t('slider.record')}</span>
           ) : (
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <rect x="3" y="3" width="10" height="10" rx="5" fill={color} opacity={1 - progress} />
               </svg>
-              {coolDown}초 후 가능
+              {t('slider.cooldown', { seconds: coolDown })}
             </span>
           )}
         </button>

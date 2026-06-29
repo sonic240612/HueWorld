@@ -1,10 +1,12 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import HueMap from './components/Map/HueMap';
 import MoodSlider from './components/MoodSlider/MoodSlider';
 import OnboardingOverlay from './components/Onboarding/OnboardingOverlay';
 import GlobalMood from './components/Dashboard/GlobalMood';
 import CountryRanking from './components/Dashboard/CountryRanking';
 import RegionalMood from './components/Dashboard/RegionalMood';
+import LanguageSelector from './components/LanguageSelector/LanguageSelector';
 import { ToastProvider, useToast } from './components/common/Toast';
 import { useGeolocation } from './hooks/useGeolocation';
 import { usePixels } from './hooks/usePixels';
@@ -21,6 +23,7 @@ function getSessionId(): string {
 }
 
 function AppContent() {
+  const { t } = useTranslation();
   const toast = useToast();
   const [onboardingDone, setOnboardingDone] = useState(false);
   const [coolDown, setCoolDown] = useState(0);
@@ -61,15 +64,15 @@ function AppContent() {
     api.submitPixel(jittered.lat, jittered.lng, color, sid)
       .then((result) => {
         setLocalPixels(prev => prev.map(p => p.id === tempId ? { ...p, id: result.id } : p));
-        toast.show('Mood recorded!', 'success');
+        toast.show(t('toast.success'), 'success');
       })
       .catch((err: Error) => {
         if (err.message.includes('502') || err.message.includes('Network')) {
-          toast.show('Backend not running → cd backend && source venv/bin/activate && uvicorn app.main:app --port 8000', 'error');
+          toast.show(t('toast.backendError'), 'error');
         } else if (err.message.includes('429')) {
-          toast.show('Please wait 5s before submitting again', 'info');
+          toast.show(t('toast.rateLimit'), 'info');
         } else {
-          toast.show(`Save failed (${err.message})`, 'error');
+          toast.show(t('toast.saveError', { message: err.message }), 'error');
         }
       });
   }, [toast]);
@@ -105,6 +108,10 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
+    document.title = t('app.title');
+  }, [t]);
+
+  useEffect(() => {
     if (geoError) toast.show(geoError, 'error');
   }, [geoError, toast]);
 
@@ -132,9 +139,11 @@ function AppContent() {
             background: devMode ? '#ff4444' : 'transparent',
           }}
         >
-          DEV
+          {t('header.dev')}
         </button>
       </div>
+
+      <LanguageSelector />
 
       <div style={styles.dashboard}>
         <GlobalMood viewportPixels={allPixels} viewportBounds={viewportBounds} />

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { GeoPosition, Pixel } from '../../types';
@@ -40,6 +41,7 @@ function createPixelIcon(map: maplibregl.Map) {
 }
 
 export default function HueMap({ center, pixels, myPixelIds, devMode, onMapMove, onDevPlacePixel }: HueMapProps) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentZoom, setCurrentZoom] = useState(DEFAULT_ZOOM);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -194,7 +196,7 @@ export default function HueMap({ center, pixels, myPixelIds, devMode, onMapMove,
         fontFamily: 'monospace', fontSize: 12, zIndex: 10,
         pointerEvents: 'none',
       }}>
-        Zoom {currentZoom.toFixed(1)}{gridMode ? ' · grid' : ' · points'}
+        {t('map.zoom', { zoom: currentZoom.toFixed(1) })}{gridMode ? ` · ${t('map.grid')}` : ` · ${t('map.points')}`}
       </div>
     </div>
   );

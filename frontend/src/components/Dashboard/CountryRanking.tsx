@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import type { CountryStat } from '../../types';
 
 export default function CountryRanking() {
+  const { t } = useTranslation();
   const [countries, setCountries] = useState<CountryStat[]>([]);
 
   const fetchRanking = useCallback(async () => {
@@ -22,9 +24,9 @@ export default function CountryRanking() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.title}>Country Ranking</div>
+      <div style={styles.title}>{t('dashboard.countryRanking')}</div>
       {countries.length === 0 && (
-        <div style={styles.empty}>No data yet</div>
+        <div style={styles.empty}>{t('dashboard.noRankingData')}</div>
       )}
       {countries.map((c, i) => {
         const rank = i + 1;

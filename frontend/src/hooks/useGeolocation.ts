@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { GeoPosition } from '../types';
 import { DEFAULT_CENTER } from '../constants';
+import i18n from '../i18n';
 
 interface GeolocationState {
   position: GeoPosition | null;
@@ -20,7 +21,7 @@ export function useGeolocation(): GeolocationState {
       setState({
         position: DEFAULT_CENTER,
         loading: false,
-        error: 'Geolocation not supported',
+        error: i18n.t('geolocation.notSupported'),
       });
       return;
     }
@@ -37,7 +38,7 @@ export function useGeolocation(): GeolocationState {
         setState({
           position: DEFAULT_CENTER,
           loading: false,
-          error: '위치 권한이 거부되었습니다. 기본 위치(서울)에서 시작합니다.',
+          error: i18n.t('geolocation.denied'),
         });
       },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import { classifyMood } from '../../utils/color';
 import type { ViewportBounds } from '../../types';
@@ -17,6 +18,7 @@ interface RegionData {
 }
 
 export default function RegionalMood({ viewportBounds }: RegionalMoodProps) {
+  const { t } = useTranslation();
   const [data, setData] = useState<RegionData | null>(null);
 
   const fetchRegion = useCallback(async () => {
@@ -57,21 +59,21 @@ const bins = CATEGORIES.map(label => {
   if (!data || total === 0) {
     return (
       <div style={styles.container}>
-        <div style={styles.title}>Distribution</div>
-        <div style={styles.empty}>No data in this area</div>
+        <div style={styles.title}>{t('dashboard.distribution')}</div>
+        <div style={styles.empty}>{t('dashboard.noData')}</div>
       </div>
     );
   }
 
   return (
     <div style={styles.container}>
-      <div style={styles.title}>Distribution</div>
+      <div style={styles.title}>{t('dashboard.distribution')}</div>
       {bins.map(b => {
         const pct = total > 0 ? Math.round((b.count / total) * 100) : 0;
         return (
           <div key={b.label} style={styles.row}>
             <div style={{ ...styles.dot, backgroundColor: b.hex }} />
-            <span style={styles.label}>{b.label}</span>
+            <span style={styles.label}>{t('mood.' + b.label)}</span>
             <div style={styles.barTrack}>
               <div style={{
                 ...styles.barFill,
