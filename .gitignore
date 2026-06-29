@@ -13,3 +13,5 @@ venv/
 .vite/
 .vercel
 .env*
+IMPLEMENTATION_PLAN.md
+HueWorld_plan.md
