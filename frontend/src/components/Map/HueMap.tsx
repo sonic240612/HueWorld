@@ -188,14 +188,6 @@ export default function HueMap({ center, pixels, myPixelIds, devMode, onMapMove,
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <div ref={containerRef} style={{ width: '100%', height: '100%', cursor: devMode ? 'crosshair' : undefined }} />
       <div style={{
-        position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-        backgroundImage: `
-          linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)
-        `,
-        backgroundSize: `${gridMode ? 16 : 6}px ${gridMode ? 16 : 6}px`,
-      }} />
-      <div style={{
         position: 'absolute', bottom: 12, right: 56,
         background: 'rgba(0,0,0,0.7)', color: '#aaa',
         padding: '4px 10px', borderRadius: 4,
