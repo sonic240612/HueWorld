@@ -10,11 +10,5 @@
       "src": "/api/(.*)",
       "dest": "app/main.py"
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/pixels/cleanup",
-      "schedule": "0 * * * *"
-    }
   ]
 }
