@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from ..models.pixel import PixelCreate, PixelSubmitResponse
-from ..services.store import insert_pixel, query_pixels, delete_expired_pixels
+from ..services.store import insert_pixel, query_pixels, delete_expired_pixels, count_active_pixels
 from ..config import settings
 
 router = APIRouter(prefix="/api/pixels", tags=["pixels"])
@@ -36,7 +36,9 @@ async def create_pixel(data: PixelCreate):
         raise HTTPException(status_code=429, detail="Cool-down active")
 
     jittered_lat, jittered_lng = _apply_jitter(data.lat, data.lng, settings.jitter_meters)
-    expires_at = (datetime.utcnow() + timedelta(hours=settings.pixel_ttl_hours)).isoformat()
+    active_count = count_active_pixels()
+    ttl = settings.max_ttl_hours if active_count < settings.min_pixel_threshold else settings.pixel_ttl_hours
+    expires_at = (datetime.utcnow() + timedelta(hours=ttl)).isoformat()
 
     created = insert_pixel(
         location_wkt=f"POINT({jittered_lng} {jittered_lat})",
