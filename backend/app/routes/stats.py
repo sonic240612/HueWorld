@@ -22,10 +22,17 @@ router = APIRouter(prefix="/api/stats", tags=["stats"])
 
 def _parse_location(row: dict) -> Optional[Tuple[float, float]]:
     point_str = row.get("location", "")
-    coords = point_str.replace("POINT(", "").replace(")", "").split()
-    if len(coords) == 2:
-        return (float(coords[1]), float(coords[0]))
-    return None
+    coords = None
+    if point_str.startswith("POINT"):
+        parts = point_str.replace("POINT(", "").replace(")", "").split()
+        if len(parts) == 2:
+            coords = (float(parts[1]), float(parts[0]))
+    else:
+        from ..services.store import _ewkb_to_lnglat
+        ewkb = _ewkb_to_lnglat(point_str)
+        if ewkb is not None:
+            coords = (ewkb[1], ewkb[0])
+    return coords
 
 
 @router.get("/global", response_model=GlobalStatsResponse)
