@@ -66,7 +66,7 @@ export default function MoodSlider({ onMoodSubmit, coolDown, onColorChange }: Mo
           }}
         >
           {canSubmit ? (
-            '지금 기록하기'
+            <span style={{ textShadow: '0 0 4px #000, 0 0 8px #000' }}>지금 기록하기</span>
           ) : (
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
