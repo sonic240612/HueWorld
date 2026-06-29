@@ -2,6 +2,8 @@
 
 실시간 글로벌 무드 맵. 사람들이 지금 느끼는 감정을 색깔로 표현하고, 어두운 세계 지도에 LED 픽셀로 시각화합니다.
 
+> **🌐 [https://hueworld.vercel.app](https://hueworld.vercel.app)**
+
 ## Features
 
 - **Mood 선택** — 슬라이더로 초록(GOOD) → 노랑(OK) → 빨강(BAD) 사이에서 감정 색상 선택
@@ -25,6 +27,8 @@
 | Auth | 익명 세션 UUID (서버 저장 없음) |
 
 ## Architecture
+
+**[https://hueworld.vercel.app](https://hueworld.vercel.app)** — 웹 브라우저에서 바로 접속
 
 ```
 Browser (hueworld.vercel.app)
@@ -73,62 +77,6 @@ hueworld/
 └── supabase/
     └── migrations/001_init.sql  # 초기 스키마
 ```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 20+
-- Python 3.12+
-- Supabase 계정 (로컬 개발 시 선택사항, in-memory 폴백 있음)
-
-### Local Development
-
-```bash
-# 1. Backend
-cd backend
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env   # Supabase credentials (선택)
-uvicorn app.main:app --reload --port 8000
-
-# 2. Frontend (다른 터미널)
-cd frontend
-npm install
-npm run dev            # http://localhost:5173
-```
-
-Vite dev server가 `/api` 요청을 `localhost:8000`으로 프록시합니다.
-
-### Environment Variables
-
-**Backend** (`.env`)
-
-| 변수 | 설명 | 기본값 |
-|------|------|--------|
-| `SUPABASE_URL` | Supabase 프로젝트 URL | `""` (in-memory) |
-| `SUPABASE_SERVICE_KEY` | Service role key | `""` (in-memory) |
-| `SUPABASE_ANON_KEY` | Anon key | `""` |
-| `CORS_ORIGINS` | 허용할 Origin 목록 (콤마 구분) | `http://localhost:5173,http://localhost:3000` |
-| `COOLDOWN_SECONDS` | 세션당 픽셀 제출 간격 | `5` |
-| `PIXEL_TTL_HOURS` | 픽셀 유효 시간 | `24` |
-| `JITTER_METERS` | 좌표 지터 반경 | `100` |
-
-**Frontend** (`.env`)
-
-| 변수 | 설명 | 기본값 |
-|------|------|--------|
-| `VITE_API_BASE_URL` | 백엔드 API URL | `/api` (Vite proxy) |
-| `VITE_SUPABASE_URL` | Supabase URL (Realtime용) | `""` |
-| `VITE_SUPABASE_ANON_KEY` | Supabase anon key | `""` |
-
-### Supabase Setup
-
-1. [Supabase](https://supabase.com)에서 새 프로젝트 생성
-2. SQL Editor에서 `supabase/migrations/001_init.sql` 실행
-3. Project Settings → API에서 URL, anon key, service role key 복사
-4. `.env` 파일에 설정
 
 ## Deployment
 
