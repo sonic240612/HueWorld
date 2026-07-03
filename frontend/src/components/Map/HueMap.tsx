@@ -143,6 +143,11 @@ export default function HueMap({ center, pixels, myPixelIds, devMode, onMapMove,
       const z = map.getZoom();
       setCurrentZoom(z);
       updateMapData(map, z, pixelsRef.current, mineRef.current);
+      const cb = cbRef.current;
+      if (cb) {
+        const b = map.getBounds();
+        cb({ sw_lat: b.getSouth(), sw_lng: b.getWest(), ne_lat: b.getNorth(), ne_lng: b.getEast() });
+      }
     });
 
     map.on('click', (e) => {
