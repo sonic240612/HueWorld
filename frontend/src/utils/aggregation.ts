@@ -10,6 +10,7 @@ export interface GridCell {
   count: number;
   pixelIds: string[];
   maxCreatedAt: string;
+  expiresAt?: string;
 }
 
 type GeojsonFeatureCollection = {
@@ -29,7 +30,7 @@ const SNAP_RES = 1 / 9;
 
 export function snapToGrid(pixels: Pixel[], zoom: number): GridCell[] {
   const snap = zoom < AGGREGATION_ZOOM_THRESHOLD;
-  const map = new Map<string, { ids: string[]; colors: string[]; lat: number; lng: number; maxTs: string }>();
+  const map = new Map<string, { ids: string[]; colors: string[]; expires: string[]; lat: number; lng: number; maxTs: string }>();
 
   for (const p of pixels) {
     const cellLat = snap ? Math.round(p.lat / SNAP_RES) * SNAP_RES : p.lat;
@@ -38,11 +39,12 @@ export function snapToGrid(pixels: Pixel[], zoom: number): GridCell[] {
 
     let existing = map.get(key);
     if (!existing) {
-      existing = { ids: [], colors: [], lat: cellLat, lng: cellLng, maxTs: p.created_at };
+      existing = { ids: [], colors: [], expires: [], lat: cellLat, lng: cellLng, maxTs: p.created_at };
       map.set(key, existing);
     }
     existing.ids.push(p.id);
     existing.colors.push(p.color);
+    if (p.expires_at) existing.expires.push(p.expires_at);
     if (p.created_at > existing.maxTs) existing.maxTs = p.created_at;
   }
 
@@ -53,6 +55,7 @@ export function snapToGrid(pixels: Pixel[], zoom: number): GridCell[] {
     count: value.colors.length,
     pixelIds: value.ids,
     maxCreatedAt: value.maxTs,
+    expiresAt: value.expires.length > 0 ? value.expires.reduce((a, b) => a < b ? a : b) : undefined,
   }));
 }
 
@@ -66,7 +69,7 @@ export function cellsToPoints(cells: GridCell[], myPixelIds?: Set<string>): Geoj
       properties: {
         color: cell.color,
         count: cell.count,
-        opacity: getPixelOpacity(cell.maxCreatedAt),
+        opacity: getPixelOpacity(cell.maxCreatedAt, cell.expiresAt),
         isMine: myPixelIds && cell.pixelIds.some(id => myPixelIds.has(id)) ? 1 : 0,
       },
     })),

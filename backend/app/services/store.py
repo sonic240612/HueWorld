@@ -132,6 +132,11 @@ def _parse_location(row: dict) -> Optional[dict]:
                 if isinstance(row["created_at"], str)
                 else row["created_at"].isoformat()
             ),
+            "expires_at": (
+                row["expires_at"]
+                if isinstance(row["expires_at"], str)
+                else row["expires_at"].isoformat()
+            ) if "expires_at" in row else None,
         }
     return None
 
@@ -150,7 +155,7 @@ def query_pixels(
         query = (
             _get_supabase()
             .table("pixels")
-            .select("id, location, color, session_id, created_at")
+            .select("id, location, color, session_id, created_at, expires_at")
             .limit(limit)
         )
         if start:
